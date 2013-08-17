@@ -2,9 +2,6 @@
 
 ###### 见 Issues
 
-#xxx: #1
-
-* User#Num: vastwu/Blog#1
 
 * [(译)是否我们该将属性的默认值设置在原型上？](https://github.com/vastwu/Blog/issues/11)
 
