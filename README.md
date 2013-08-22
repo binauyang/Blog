@@ -2,6 +2,8 @@
 
 ###### 见 Issues
 
+* [IE9 iframe中原生对象未定义错误原因](https://github.com/vastwu/Blog/issues/14)
+
 * [(译)程序员困境](https://github.com/vastwu/Blog/issues/13)
 
 * [(译)是否我们该将属性的默认值设置在原型上？](https://github.com/vastwu/Blog/issues/11)
