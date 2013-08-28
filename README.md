@@ -2,6 +2,8 @@
 
 ###### 见 Issues
 
+* [看googleMap - V3 部分解析](https://github.com/vastwu/Blog/issues/17)
+
 * [IE9 iframe中原生对象未定义错误原因](https://github.com/vastwu/Blog/issues/15)
 
 * [(译)程序员困境](https://github.com/vastwu/Blog/issues/13)
