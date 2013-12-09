@@ -1,5 +1,7 @@
 ### Blog
 
+### [迁移到此处](http://blog.vastwu.gitpress.org/)
+
 ###### 见 Issues
 
 * [看googleMap - V3 部分解析](https://github.com/vastwu/Blog/issues/17)
