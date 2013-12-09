@@ -1,6 +1,6 @@
 {
   "docs"  : ["docs"],
-  "template"  : "default",
+  "template"  : "slate",
   "title"  : "Vast's Blog",  
   "comment"  : "on"
 }
