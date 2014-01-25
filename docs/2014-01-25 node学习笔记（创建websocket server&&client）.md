@@ -14,7 +14,7 @@
 
 随后是监听 upgrade 事件，在回调函数中会获取到socket，设置下保持链接，超时时间什么的，随后监听data事件，就完事啦，非常easy
 往回发的那个socket是告诉客户端通信成功，如果要最简单的话，其实这个也可以无所谓啦
-
+```
   server.on('upgrade', function(request, socket, head){
     console.log('remotePort:' + socket.remotePort + ' connecting');
     socket.setTimeout(0);
@@ -29,11 +29,11 @@
                'Connection: Upgrade\r\n' +
                '\r\n');
   };
-
+```
 ## Client部分（client.js）
 
 使用http模块创建一个请求对象
-
+```
   var client = http.request({
       'host':'127.0.0.1',
       'port':'80',
@@ -45,9 +45,10 @@
       console.log('request start');
   });
   client.end();
-  
+```  
 随后监听 upgrade 事件，捕获连接成功
 
+```
   client.on('upgrade', function(res, socket, upgradeHead) {
       console.log('got upgraded!');
 
@@ -59,6 +60,7 @@
           console.log('request data:' + data);
       })
   });
+```
 
 在连接成功后开启一个setInterval，每隔2秒像服务器发送一个 how are you 的字符串，并监听服务器socket的data事件，在控制台输出
 
