@@ -1,4 +1,4 @@
-# node学习笔记（创建websocket server&&client）
+# node学习笔记（创建持久连接和通信）
 
 开年第一篇，上班用了一段时间mac，回家就给window装上了powershell，sublime打开了vim快捷键，一下感觉高达上了有没有。
 
@@ -6,15 +6,18 @@
 这次尝试了下网络相关的玩意，普通的Server很简单，记录下怎么弄个最简单的web-socket
 
 
-## Server部分(server.js)
+### Server部分(server.js)
 
 首先建立个最基本的Server对象
 
+```javascript
   var server = http.createServer().listen('80');
+```
 
 随后是监听 upgrade 事件，在回调函数中会获取到socket，设置下保持链接，超时时间什么的，随后监听data事件，就完事啦，非常easy
 往回发的那个socket是告诉客户端通信成功，如果要最简单的话，其实这个也可以无所谓啦
-```
+
+```javascript
   server.on('upgrade', function(request, socket, head){
     console.log('remotePort:' + socket.remotePort + ' connecting');
     socket.setTimeout(0);
@@ -30,10 +33,12 @@
                '\r\n');
   };
 ```
-## Client部分（client.js）
+
+### Client部分（client.js）
 
 使用http模块创建一个请求对象
-```
+
+```javascript
   var client = http.request({
       'host':'127.0.0.1',
       'port':'80',
@@ -46,9 +51,10 @@
   });
   client.end();
 ```  
+
 随后监听 upgrade 事件，捕获连接成功
 
-```
+```javascript
   client.on('upgrade', function(res, socket, upgradeHead) {
       console.log('got upgraded!');
 
