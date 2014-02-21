@@ -22,6 +22,8 @@ google没有用目前很流行cmd，amd的那套方式，起码在生产环境�
 
 看起来似乎有点像 cmd的 `define(moduleName, factory)`，但这里的两个参数均为String
 
+<!--more-->
+
 >说一下此处的阅读方式，在控制台里输入`new Function(moduleCode)`后会输出一大堆代码，这里是用code构造的新function，已经处理过了单引号双引号等问题，扔到IDE里格式化一下就可以看了，不过依旧痛苦，需要耐心
 
 我们在其几乎所有的模块中都会找到一段类似的代码
