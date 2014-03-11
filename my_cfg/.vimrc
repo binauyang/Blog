@@ -10,6 +10,7 @@ set smartindent
 set expandtab   
 set noautoindent
 set rnu
+set clipboard=unnamed
 set autoread
 set autowriteall
 set fileencodings=utf-8,gbk
