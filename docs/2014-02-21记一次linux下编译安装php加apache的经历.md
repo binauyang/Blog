@@ -117,7 +117,7 @@ Loaded Configuration File	/home/users/wusen/local/php/lib/php.ini
 2. 在php源码中的ext目录下寻找curl的目录，此目录中包含一些类似桥接信息的代码，我之前把这块东西误解为php源码中附带了某些扩展模块的源码，直接用这里的文件进行安装编译发现怎么也不行。
 3. 在此目录下先调用`phpize`生成`configure`文件。
 4. 执行`./configure --with-curl=DIR`，此处的DIR即是前面安装curl的目录，随后`make && make install`即可，最后会提示生成的`.so`文件所在目录，
-5. 去`php.ini`里改动`extensions`目录和打开加载`curl.so`即可，这个文件名可能会有些不同，注意下即可，另外window下是`.`dll`，linux下是`.so`，这个需要注意下
+5. 去`php.ini`里改动`extensions`目录和打开加载`curl.so`即可，这个文件名可能会有些不同，注意下即可，另外window下是`.dll`，linux下是`.so`，这个需要注意下
 
 
 
