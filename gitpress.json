@@ -1,10 +1,10 @@
 {
   "docs"  : {
-        "工作":"docs/work",
-        "翻译":"docs/englist",
-        "简历":"docs/resume"
+        "work":"docs/work",
+        "english":"docs/englist",
+        "resume":"docs/resume"
     },
-  "template"  : "phase",
+  "template"  : "pithiness",
   "title"  : "Vast's Blog",  
   "comment"  : "on"
 }
