@@ -6,5 +6,5 @@
     },
   "template"  : "pithiness",
   "title"  : "Vast's Blog",  
-  "comment"  : "on"
+  "comment"  : {"type":"duoshuo", "short_name":"gitpress"}
 }
