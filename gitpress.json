@@ -1,6 +1,10 @@
 {
-  "docs"  : ["docs"],
-  "template"  : "slate",
+  "docs"  : {
+        "工作":"docs/work",
+        "翻译":"docs/englist",
+        "简历":"docs/resume"
+    },
+  "template"  : "phase",
   "title"  : "Vast's Blog",  
   "comment"  : "on"
 }
