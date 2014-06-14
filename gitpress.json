@@ -1,6 +1,6 @@
 {
   "docs"  : ["docs"],
-  "template"  : "tactile",
+  "template"  : "slate",
   "title"  : "Vast's Blog",  
   "comment"  : "on"
 }
