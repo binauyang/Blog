@@ -47,7 +47,7 @@ play($('elem'), 1000);
 线性变化一般是指匀速运动，缓动是模拟显示物理效果，实现近似摩擦减速或逐步加速的运动过程，
 ```javascript
 var play = function(dom, add, end){
-	var delta = 10;
+	var change = 10;
 	var timer = setInterval(function(){
 		v += add;
 		var left = parseInt(dom.style.left);
@@ -55,7 +55,7 @@ var play = function(dom, add, end){
 			clearInterval(timer);
 			return;
 		}
-		dom.style.left = left + delta + ‘px’；
+		dom.style.left = left + change + ‘px’；
 	}, 16)；
 }
 //useage
@@ -101,21 +101,141 @@ var easeIn = function(x){
 var play = function(dom, end， timingFunction){
 	var process = 0;
 	var left = parseInt(dom.style.left);
-	var delta = end - left;
+	var change = end - left;
 	var timer = setInterval(function(){
 		process += 0.1;
-		left = left + timingFunction(process) * delta;
-		dom.style.left = left + ‘px’；
+		left = left + timingFunction(process) * change;
+		dom.style.left = left + 'px'；
 		if(process == 1){
 			clearInterval(timer);
 			return;
 		}
-	}, 16)；
+	}, 16);
 }
 //useage
 play($('elem'), 1000, leaner);
 ```
 
-> Question-3:什么`process`只能每次递增`0.1`，想要控制时间，想要控制帧率
+> Question-3:什么`process`只能每次递增`0.1`，想要控制时间怎么办
 
 ## STEP 3.帧率和时间
+
+两者需要结合起来一起解决，如果试图通过增加参数来解决问题，随着日后的功能扩展，会逐渐增加更多的参数
+
+另外还有用一个问题，当增加了时间限制，而帧率则与`setInterval`的频率相关，就同时需要调整`del``
+
+```javascript
+var play = function(dom, end， timingFunction, duration, fps, ...){
+	...
+}
+//useage
+play($('elem'), 1000, leaner, 3000, 60, ...);
+```
+
+另外，如果简单的增加时间参数，则会在调整效果时面对更多的复杂的参数，此处需要吧时间作为唯一考量标准，由此推算出其他参数
+
+> 程序设计的重要思想，变量归一化，将多个相关的变量，总结整理为尽可能少的输入项，由程序完成推算过程
+
+```javascript
+var play = function(dom, end， timingFunction, duration){
+	var process = 0;
+	var left = parseInt(dom.style.left);
+	var change = end - left;
+	var startTime = new Date();
+	var timer = setInterval(function(){
+		var pass = new Date() - startTime;
+		process = pass / duratioin;
+		left = left + timingFunction(process) * change;
+		if(process >= 1){
+			clearInterval(timer);
+			left = end;
+		}
+		dom.style.left = left + 'px';
+	}, 16);
+}
+```
+
+此处由时间计算进度，控制了总体执行时间，如果出现性能问题，则会表现出跳帧现象，从而总时间不受影响，另外此种情况下可能出现最后一帧超过预定结束值的情况，故在最后时多增加了一次设置位置。
+
+> Question-4:我想改`top`,想做透明度渐变，想做斜线运动
+
+## STEP 4.绘制过程解耦
+
+面对复杂的需求，上面的函数显然已经不够用了，不同的动画效果都要写一个不同的`play`函数岂不是太麻烦了，此时需要抽取出变化过程（绘制函数），以确保我们的动画函数自身功能单一
+
+```javascript
+var play = function(timingFunction, duration, renderer){
+	var process = 0;
+	var startTime = new Date();
+	var timer = setInterval(function(){
+		var pass = new Date() - startTime;
+		process = pass / duratioin;
+		process = timingFunction(process);
+		renderer(process);
+		if(process >= 1){
+			clearInterval(timer);
+		}
+	}, 16);
+}
+//usage
+var startValue = parseInt(dom.style.left);
+var changeValue = 500 - startValue;
+play(leaner, 3000, function(progress){
+	dom.style.left = startValue + changeValue * process + 'px'；
+})
+```
+此处的`usage`部分跟最原始的写法是不是很相近？此处将绘制部分剥离，`play`只负责计算进度和缓动函数变化，按一定频率调用外部传入的回执函数，这样如何绘制动画就交给了外部使用者来决定，例如我们可以按下面这样使用来进行不同属性，不同变化率的动画
+```javascript
+//usage
+play(leaner, 3000, function(progress){
+	dom.style.left = startValue + changeValue * process + 'px';
+	dom.style.top = startValue + changeValue * process + 'px';
+})
+play(easeIn, 3000, function(progress){
+	dom.style.opacity = 1 * process + 'px';
+})
+```
+
+> Question-5: 说好的暂停，继续，加速，减速，播放到指定进度
+
+## STEP 5. 动画类对象
+
+说到控制，其实就是在动画期间进行动态调整参数
+
+动画效果的两大类设计思路
+
+* 连续：在`step3`之前的函数均是连续型，动画的每一帧的绘制依赖于前一个帧的状态
+* 瞬时：从`step3`之后，每一帧的绘制只依赖于进度`process`
+
+
+```javascript
+	var Animate = function(fps, timingFunction, duration, renderer){
+		var process = 0;
+		var k = 1;
+		var startTime = new Date();
+		var timer = null;
+		
+		this.start = function(){
+			startTime = new Date();
+			timer = setInterval(function(){
+				var pass = new Date() - startTime;
+				process = pass / duratioin;
+				process = timingFunction(process * k);
+				renderer(process);
+				if(process >= 1){
+					clearInterval(timer);
+				}
+			}
+		}
+		this.changeSpeed = function(t){
+			k = t;
+		}
+		this.pause = function(){
+			
+		}
+		this.stop = function(){
+			process = 1;
+			clearInterval(timer);
+		}
+	}
+```
