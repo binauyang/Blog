@@ -1,9 +1,7 @@
 {
-  "docs"  : {
-        "work":"docs/work",
-        "english":"docs/englist",
-        "resume":"docs/resume"
-    },
+  "docs"  : [
+        "docs/work", "docs/englist", "docs/resume"
+  ],
   "template"  : "pithiness",
   "title"  : "Vast's Blog",  
   "comment"  : {"type":"duoshuo", "short_name":"gitpress"}
