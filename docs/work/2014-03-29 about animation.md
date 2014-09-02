@@ -26,7 +26,8 @@
 
 ## STEP 1. 起步
 先从最简单的动画效果说起，如下代码。
-```
+
+```javascript
 var play = function(dom, end){
 	var timer = setInterval(function(){
 		var left = parseInt(dom.style.left);    //后文简化为getLeft
@@ -40,6 +41,7 @@ var play = function(dom, end){
 //useage
 play($('elem'), 1000);
 ```
+
 
 > Question-1: 如何缓动，实现非线性变化
 
@@ -72,16 +74,18 @@ play($('elem'), 1, 1000);
 简单的缓动函数是由`x,y`组成的二元表达式，输入`x`，输出`y`，表示一种依赖变化关系
 
 * 线性变化函数 
+
 ```javascipt
-	function (x){
-		return x;
-	}
+function (x){
+	return x;
+}
 ```
 * 加速变化函数 
+
 ```javascipt
-	function (x){
-		return x * x;
-	}
+function (x){
+	return x * x;
+}
 ```
 
 ##### 在动画函数中如何应用？
@@ -124,7 +128,7 @@ play($('elem'), 1000, leaner);
 另外还有用一个问题，当增加了时间限制，而帧率则与`setInterval`的频率相关，就同时需要调整`del``
 
 ```javascript
-var play = function(dom, end， timingFunction, duration, fps, ...){
+var play = function(dom, end, timingFunction, duration, fps, ...){
 	...
 }
 //useage
@@ -136,7 +140,7 @@ play($('elem'), 1000, leaner, 3000, 60, ...);
 > 程序设计的重要思想，变量归一化，将多个相关的变量，总结整理为尽可能少的输入项，由程序完成推算过程
 
 ```javascript
-var play = function(dom, end， timingFunction, duration){
+var play = function(dom, end, timingFunction, duration){
 	var process = 0;
 	var left = getLeft();
 	var change = end - left;
@@ -181,7 +185,7 @@ var play = function(timingFunction, duration, renderer){
 var startValue = getLeft()
 var changeValue = 500 - startValue;
 play(leaner, 3000, function(progress){
-	setLeft(startValue + changeValue * process)；
+	setLeft(startValue + changeValue * process);
 })
 ```
 此处的`usage`部分跟最原始的写法是不是很相近？此处将绘制部分剥离，`play`只负责计算进度和缓动函数变化，按一定频率调用外部传入的回执函数，这样如何绘制动画就交给了外部使用者来决定，例如我们可以按下面这样使用来进行不同属性，不同变化率的动画
