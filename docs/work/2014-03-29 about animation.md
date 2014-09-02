@@ -26,7 +26,7 @@
 
 ## STEP 1. 起步
 先从最简单的动画效果说起，如下代码。
-```javascript
+```
 var play = function(dom, end){
 	var timer = setInterval(function(){
 		var left = parseInt(dom.style.left);    //后文简化为getLeft
