@@ -29,12 +29,12 @@
 ```javascript
 var play = function(dom, end){
 	var timer = setInterval(function(){
-		var left = parseInt(dom.style.left);
+		var left = parseInt(dom.style.left);    //后文简化为getLeft
 		if(left >= end){
-			clearInterval(timer);
+			clearInterval(timer);           //后文简化为stop
 			return;
 		}
-		dom.style.left = left + 10 + ‘px’；
+		dom.style.left = left + 10 + ‘px’；//后文简化为setLeft
 	}, 16)；
 }
 //useage
@@ -45,18 +45,18 @@ play($('elem'), 1000);
 
 ## STEP 2.匀加速缓动 
 线性变化一般是指匀速运动，缓动是模拟显示物理效果，实现近似摩擦减速或逐步加速的运动过程，
+
 ```javascript
 var play = function(dom, add, end){
 	var change = 10;
-	var timer = setInterval(function(){
-		v += add;
-		var left = parseInt(dom.style.left);
+	setInterval(function(){
+		change += add;
+		var left = getLeft();
 		if(left >= end){
-			clearInterval(timer);
-			return;
+			stop();
 		}
-		dom.style.left = left + change + ‘px’；
-	}, 16)；
+		setLeft(left + change);
+	}, 16);
 }
 //useage
 play($('elem'), 1, 1000);
@@ -100,15 +100,14 @@ var easeIn = function(x){
 }
 var play = function(dom, end， timingFunction){
 	var process = 0;
-	var left = parseInt(dom.style.left);
+	var left = getLeft();
 	var change = end - left;
-	var timer = setInterval(function(){
+	setInterval(function(){
 		process += 0.1;
 		left = left + timingFunction(process) * change;
-		dom.style.left = left + 'px'；
+		setLeft(left);
 		if(process == 1){
-			clearInterval(timer);
-			return;
+			stop()
 		}
 	}, 16);
 }
@@ -139,18 +138,19 @@ play($('elem'), 1000, leaner, 3000, 60, ...);
 ```javascript
 var play = function(dom, end， timingFunction, duration){
 	var process = 0;
-	var left = parseInt(dom.style.left);
+	var left = getLeft();
 	var change = end - left;
 	var startTime = new Date();
-	var timer = setInterval(function(){
+	
+	setInterval(function(){
 		var pass = new Date() - startTime;
 		process = pass / duratioin;
 		left = left + timingFunction(process) * change;
 		if(process >= 1){
-			clearInterval(timer);
+			stop();
 			left = end;
 		}
-		dom.style.left = left + 'px';
+		setLeft(left);
 	}, 16);
 }
 ```
@@ -173,32 +173,32 @@ var play = function(timingFunction, duration, renderer){
 		process = timingFunction(process);
 		renderer(process);
 		if(process >= 1){
-			clearInterval(timer);
+    		stop();
 		}
 	}, 16);
 }
 //usage
-var startValue = parseInt(dom.style.left);
+var startValue = getLeft()
 var changeValue = 500 - startValue;
 play(leaner, 3000, function(progress){
-	dom.style.left = startValue + changeValue * process + 'px'；
+	setLeft(startValue + changeValue * process)；
 })
 ```
 此处的`usage`部分跟最原始的写法是不是很相近？此处将绘制部分剥离，`play`只负责计算进度和缓动函数变化，按一定频率调用外部传入的回执函数，这样如何绘制动画就交给了外部使用者来决定，例如我们可以按下面这样使用来进行不同属性，不同变化率的动画
 ```javascript
 //usage
 play(leaner, 3000, function(progress){
-	dom.style.left = startValue + changeValue * process + 'px';
-	dom.style.top = startValue + changeValue * process + 'px';
+	setLeft(geValue * process);             //后文统一简化为draw
+	setTop(startValue + changeValue * process);
 })
 play(easeIn, 3000, function(progress){
-	dom.style.opacity = 1 * process + 'px';
+	setOpacity(1 * process);
 })
 ```
 
 > Question-5: 说好的暂停，继续，加速，减速，播放到指定进度
 
-## STEP 5. 动画类对象
+## STEP 5. 动画控制对象
 
 说到控制，其实就是在动画期间进行动态调整参数
 
@@ -209,7 +209,7 @@ play(easeIn, 3000, function(progress){
 
 
 ```javascript
-	var Animate = function(fps, timingFunction, duration, renderer){
+	var Animate = function(fps, timingFunction, duration, draw){
 		var process = 0;
 		var k = 1;
 		var startTime = new Date();
@@ -221,11 +221,11 @@ play(easeIn, 3000, function(progress){
 				var pass = new Date() - startTime;
 				process = pass / duratioin;
 				process = timingFunction(process * k);
-				renderer(process);
+				draw(process);
 				if(process >= 1){
 					clearInterval(timer);
 				}
-			}
+			}, 16);
 		}
 		this.changeSpeed = function(t){
 			k = t;
@@ -238,4 +238,46 @@ play(easeIn, 3000, function(progress){
 			clearInterval(timer);
 		}
 	}
+```
+> Question-5:过多的绘制对象产生大量`setInterval`,导致性能下降,如何解决
+
+### STEP.6 集中重绘
+#### a.
+```javascript
+    setInterval(function(){
+        render_a();
+    }, 16);
+    setInterval(function(){
+        render_b();
+    }, 16);
+    ...
+```
+#### b.
+```javascript
+    setInterval(function(){
+        render_a();
+        render_b();
+    }, 16);
+    ...
+```
+#### c.
+```javascript
+    setInterval(function(){
+        items.each(function(index, draw){
+            draw();
+        });
+    }, 16);
+    ...
+```
+```javascript
+var Scene = function(){
+    var items = [];
+    setInterval(function(){
+        items.each(function(index, draw){
+            draw();
+        });
+    }, 16);
+    this.add = function(){}
+    this.remove = function(){}
+}
 ```
