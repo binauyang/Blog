@@ -35,7 +35,7 @@ var play = function(dom, end){
 			clearInterval(timer);           //后文简化为stop
 			return;
 		}
-		dom.style.left = left + 10 + ‘px’；//后文简化为setLeft
+		dom.style.left = left + 10 + 'px'；//后文简化为setLeft
 	}, 16)；
 }
 //useage
@@ -102,7 +102,7 @@ var leaner = function(x){
 var easeIn = function(x){
 	return x * x;
 }
-var play = function(dom, end， timingFunction){
+var play = function(dom, end, timingFunction){
 	var process = 0;
 	var left = getLeft();
 	var change = end - left;
@@ -257,14 +257,16 @@ play(easeIn, 3000, function(progress){
     ...
 ```
 #### b.
+
 ```javascript
     setInterval(function(){
         render_a();
         render_b();
+         ...
     }, 16);
-    ...
 ```
 #### c.
+
 ```javascript
     setInterval(function(){
         items.each(function(index, draw){
@@ -273,6 +275,8 @@ play(easeIn, 3000, function(progress){
     }, 16);
     ...
 ```
+
+
 ```javascript
 var Scene = function(){
     var items = [];
