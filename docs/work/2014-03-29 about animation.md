@@ -243,10 +243,10 @@ play(easeIn, 3000, function(progress){
 		}
 	}
 ```
-> Question-5:过多的绘制对象产生大量`setInterval`,导致性能下降,如何解决
+> Question-5:过多的绘制对象产生大量`setInterval`,导致性能下降,进程阻塞,如何解决
 
 ### STEP.6 集中重绘
-#### a.
+#### a.多个对象的绘制过程
 ```javascript
     setInterval(function(){
         render_a();
@@ -256,7 +256,7 @@ play(easeIn, 3000, function(progress){
     }, 16);
     ...
 ```
-#### b.
+#### b.整合在一次绘制中
 
 ```javascript
     setInterval(function(){
@@ -265,7 +265,7 @@ play(easeIn, 3000, function(progress){
          ...
     }, 16);
 ```
-#### c.
+#### c.支持复数个对象绘制
 
 ```javascript
     setInterval(function(){
@@ -275,7 +275,7 @@ play(easeIn, 3000, function(progress){
     }, 16);
     ...
 ```
-
+#### d.场景对象
 
 ```javascript
 var Scene = function(){
@@ -285,7 +285,74 @@ var Scene = function(){
             draw();
         });
     }, 16);
-    this.add = function(){}
-    this.remove = function(){}
+    this.add = function(){...}
+    this.remove = function(){...}
 }
+```
+> Question-6:不停的重绘对于, dom节点的高频操作会导致严重的性能问题, 如何解决?
+
+### STEP.7 脏属性
+
+每次重绘只处理变化了的属性,对于不变的属性略过(js的逻辑判断相比于dom节点属性设置,性能损耗小太多了)
+
+```javascript
+draw:function(){
+    if(this.top_changed){
+        this.elem.style.top = this.top + 'px';
+    }
+    if(this.left_changed){
+        this.elem.style.left = this.left + 'px';
+    }
+}
+```
+
+### STEP.8 结构解耦,可替换的渲染器
+
+要实现该种逻辑,需要将dom节点与绘制元素对象分离,抽象出`数据对象`和`渲染器对象`,除了更好的分离数据和`dom`节点,更可以方便的替换`渲染器对象`实现不同的渲染方式
+
+
+```javascript
+    //简单的数据对象
+    var CustomImage = function(x, y, src){
+        this.src = src;
+        this.left = x;
+        ...
+    }
+    
+    //Dom型渲染器
+    var DomRender = function(){
+        ...
+        var context = document.createElement('div');
+        this.draw = function(data){
+            var img = new Image();
+            img.src = data.src;
+            if(data.left_changed){
+                 img.style.left = data.x + 'px';
+            }
+            ...
+            context.appendChild(img);
+        }
+    }
+    
+    //Canvas型渲染器
+    var CanvasRender = function(){
+        ...
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        this.draw = function(data){
+            if(data.left_changed){
+                context.clearRect();
+                var img = new Image();
+                img.src = data.src;
+                ...
+                context.drawImage(img, x ...);
+            }
+
+        }
+    }
+    
+    //useage
+    var img = new CustomImage(...);
+    var render = new DomRender();   //new CanvasRender();
+    render.draw(img)
 ```
