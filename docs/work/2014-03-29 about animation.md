@@ -8,7 +8,7 @@
 * 进度
 * 缓动函数
 
-## 动画效果中的问题
+## 大纲
 * 效果
 	* 效果实现（属性分解）
 	* 缓动函数
@@ -118,6 +118,12 @@ var play = function(dom, end, timingFunction){
 //useage
 play($('elem'), 1000, leaner);
 ```
+
+### 更复杂的缓动函数
+
+资料: [让界面动画更自然](http://djt.qq.com/article/view/1249)
+
+
 
 > Question-3:什么`process`只能每次递增`0.1`，想要控制时间怎么办
 
